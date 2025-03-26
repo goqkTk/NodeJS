@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background-color: #333;
+            padding: 10px 0;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .article-list {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">홈</a></li>
+                <li><a href="/login">로그인</a></li>
+                <li><a href="/register">회원가입</a></li>
+                <li><a href="/create-article">글 작성</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="article-list">
+            <h2>게시글 목록</h2>
+            <div id="articles"></div>
+        </section>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/articles')
+                .then(response => response.json())
+                .then(data => {
+                    const articlesDiv = document.getElementById('articles');
+                    if (data.length === 0) {
+                        articlesDiv.innerHTML = '<p>게시글이 없습니다.</p>';
+                    } else {
+                        data.forEach(article => {
+                            const articleElement = document.createElement('div');
+                            articleElement.classList.add('article');
+
+                            articleElement.innerHTML = `
+                                <h3>${article.title}</h3>
+                                <p>${article.content}</p>
+                                <p>작성자: ${article.username} | ${article.date}</p>
+                            `;
+
+                            articlesDiv.appendChild(articleElement);
+                        });
+                    }
+                })
+                .catch(error => console.error('게시글 로드 실패:', error));
+        });
+    </script>
+</body>
+</html>
